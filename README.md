@@ -25,11 +25,6 @@ a random fake entities dataset can be generated. How to do all of that, please r
 
 One also has two options how to store the output results: either in a mongo collection(useful for K8S runs), or locally.
 
-Some documents are available at
-[Google drive folder](https://drive.google.com/drive/folders/18gMttFDhbfcXhuSRFRxXW3utwtfbhb4L?usp=sharing).
-Also, here where we describe results of all experiments
-[Confluence page](https://stelapoint.atlassian.net/wiki/spaces/MI/pages/2111078636/Entity+Resolution)
-
 ## Dev workflow
 Uses `make` to run code style and unit-tests in the same way as they are run by Gitlab.
 It is recommended to run these commands before committing code. Each task has its own additional requirements,
