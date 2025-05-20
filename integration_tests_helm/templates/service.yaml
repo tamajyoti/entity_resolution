@@ -1,0 +1,16 @@
+{{- if .Values.server.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "am_combiner_integration_tests.fullname" . }}
+  labels:
+    {{- include "am_combiner_integration_tests.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: {{ .Values.server.port }}
+      targetPort: {{ .Values.server.portName }}
+      protocol: TCP
+      name: {{ .Values.server.portName }}
+  selector:
+    {{- include "am_combiner_integration_tests.selectorLabels" . | nindent 4 }}
+{{- end }}

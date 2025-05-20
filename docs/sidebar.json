@@ -1,0 +1,12 @@
+{
+  "am_combiner": {
+    "Overview": "/",
+    "DQS data": "clustering.html",
+    "Mongo tools": "mongo_config.html",
+    "Name commonness score": "articles_data.html",
+    "Strategy": "name_commonness.html",
+    "Exploration": "03-date-features.html",
+    "Feature Extractor": "Feature_Profession.html",
+    "Title": "Feature_DBPedia_EntityResolution.html"
+  }
+}

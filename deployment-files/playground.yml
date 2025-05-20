@@ -1,0 +1,70 @@
+.playground_settings: &playground_settings
+  # Pipeline specific
+  ARGOCD_PROJECT: "am-combiner"
+  CLUSTER: "ca-amt-mi-playground-1/eu-west-1/eks-mi-playground-1-euw1-01"
+  NAMESPACE: "entity-resolution"
+  VALUES_FILES: "eks-mi-playground-1-euw1-01-values.yaml"
+  TARGET_BRANCH: "playground"
+  INGRESS_HOST: "k8s.euw1.mi-playground-1.uk"
+  PROJECT_TITLE: "AM Combiner"
+
+# Normal Deployment is Disabled
+# Current default Helm chart is manually used by the Data Scientists
+
+# deploy-feature-playground:
+#   extends: .deploy
+#   only:
+#     - branches
+#   except:
+#     - /^release/
+#     - master
+#   environment:
+#     name: "playground/${CI_COMMIT_REF_SLUG}"
+#     on_stop: destroy-feature-playground
+#     url: "https://${ARGOCD_SERVER}/applications/${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}"
+#   variables:
+#     <<: *playground_settings
+#
+# destroy-feature-playground:
+#   only:
+#     - branches
+#   except:
+#     - /^release/
+#     - master
+#   environment:
+#     name: "playground/${CI_COMMIT_REF_SLUG}"
+#     action: stop
+#   extends: .destroy
+#   variables:
+#     <<: *playground_settings
+
+
+# AM Combiner is currently a one-shot job
+# Enable this if it becomes a service
+
+# deploy-longterm-playground:
+#   extends: .deploy
+#   only:
+#     - master
+#     - tags
+#   environment:
+#     name: "playground/${RELEASE_NAME}"
+#     on_stop: destroy-longterm-playground
+#     url: "https://${ARGOCD_SERVER}/applications/${RELEASE_NAME}"
+#   variables:
+#     <<: *playground_settings
+#     RELEASE_NAME: entity-reporter
+#   when: always
+#   allow_failure: false
+#
+# destroy-longterm-playground:
+#   only:
+#     - master
+#     - tags
+#   environment:
+#     name: "playground/${RELEASE_NAME}"
+#     action: stop
+#   extends: .destroy
+#   variables:
+#     <<: *playground_settings
+#     RELEASE_NAME: entity-reporter

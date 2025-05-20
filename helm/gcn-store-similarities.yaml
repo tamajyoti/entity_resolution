@@ -1,0 +1,54 @@
+resources:
+  # Initial guess from the provision of TORCH and spacy in the pod.  May need to be higher
+  limits:
+    cpu: 8000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+image:
+  appVersion: feature-pla-3035-433a37f1
+
+common:
+  disableDownScaler: true
+  # Never - if job cannot be restarted, OnFailure if it can
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: HeteroGCNCombinerStoreSim
+    enabled: true
+    class: GCNHeteroCombiner
+    attrs:
+      model_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCNHeteroCombiner_512_th_0.92.torch
+      config_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCNHeteroCombiner_512_th_0.92.json
+      cache: am_combiner/data/models/
+      node_features: Features.TFIDF_FULL_TEXT_12000
+      mongo_uri: mongodb://mongodb-mf-person-0-0.mi-playground-1.uk:27017,mongodb-mf-person-0-1.mi-playground-1.uk:27017,mongodb-mf-person-0-2.mi-playground-1.uk:27017/am_combiner
+      mongo_collection: similarities # Please change this for each run, in order to not duplicate the stored similarities in the collection
+      use_features:
+        - Features.ORG_CLEAN
+        - Features.PERSON_CLEAN
+        - Features.GPE_CLEAN
+        - Features.LOC
+        - Features.DOMAIN
+        - Features.AM_CATEGORY
+
+experiments:
+  - experimentId: gcnstoresimilarities
+    numRuns: 1
+    numParallel: 1
+    args:
+      - --visitors=HTMLTextCleaner
+      - --visitors=SpacyArticleVisitor
+      - --visitors=EntityNameFromPersonCleaner
+      - --visitors=EntityNameFromGPECleaner
+      - --visitors=EntityNameFromORGCleaner
+      - --visitors=EntityNameRemoverFullTextVisitor
+      - --visitors=TFIDFFullTextVisitorS3_12000
+      - --visitors=AdverseMediaVisitor
+      - --visitors=UrlDomainVisitor
+      - --skip-validation=True
+      - --input-data-source=mongo
+      - --mongo-collection=similarities
+      - --mongo-output-collection=similarities

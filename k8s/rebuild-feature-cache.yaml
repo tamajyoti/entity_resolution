@@ -1,0 +1,56 @@
+# Source: am-combiner/templates/job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: er-feature-cache-rebuilding
+  labels:
+    app.kubernetes.io/name: am-combiner
+    helm.sh/chart: am-combiner-0.1.0
+    app.kubernetes.io/instance: er-cache-rebuilding
+    app.kubernetes.io/version: "master-87cefd1d"
+spec:
+  completions: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: am-combiner
+        app.kubernetes.io/instance: er-cache-rebuilding
+      annotations:
+        downscaler/exclude: "true"
+    spec:
+      serviceAccountName: entity-resolution-aws-access
+      restartPolicy: OnFailure
+      containers:
+        - name: am-combiner
+          image: "871716277715.dkr.ecr.eu-west-1.amazonaws.com/machine-learning/data-science-and-statistical-learning/am_combiner:test-chache-meta-keys-addition-ded6ba16"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 8000m
+              memory: 24Gi
+            requests:
+              cpu: 4000m
+              memory: 24Gi
+          command:
+            - python
+            - am_combiner/utils/build_feature_cache.py
+          args:
+            - --mongo-collection=random_uncommon_v2_test_set
+            - --mongo-collection=random_uncommon_v2_set
+            - --mongo-collection=random_validation_data_1K
+            - --mongo-collection=random_validation_large_60K
+            - --mongo-collection=random_validation_all_names
+            - --mongo-collection=ca_validation_data_all
+            - --cache-name=cache_v5
+            - --meta-data-keys=listing_subtype
+            - --visitors=HTMLTextCleaner
+            - --visitors=SpacyArticleVisitor
+            - --visitors=EntityNameFromPersonCleaner
+            - --visitors=EntityNameFromGPECleaner
+            - --visitors=EntityNameFromORGCleaner
+            - --visitors=EntityNameRemoverFullTextVisitor
+            - --visitors=TFIDFFullTextVisitorS3
+            - --visitors=TFIDFFullTextVisitorS3_8000
+            - --visitors=TFIDFFullTextVisitorS3_12000
+            - --visitors=AdverseMediaVisitor
+            - --visitors=UrlDomainVisitor

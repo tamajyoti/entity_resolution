@@ -1,0 +1,83 @@
+resources:
+  # Initial guess from the provision of TORCH and spacy in the pod.  May need to be higher
+  limits:
+    cpu: 8000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+common:
+  disableDownScaler: true
+  # Never - if job cannot be restarted, OnFailure if it can
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: TFIDFCosineSimilarityCombiner
+    enabled: true
+    class: TFIDFCosineSimilarityCombiner
+    attrs:
+      source_feature: Features.TFIDF_FULL_TEXT
+      th:
+        - 0.1
+        - 0.2
+        - 0.3
+        - 0.4
+        - 0.5
+        - 0.6
+        - 0.7
+        - 0.8
+        - 0.9
+  - combiner_name: TFIDFPairwiseIncrementalCombiner
+    enabled: true
+    class: PairwiseIncrementalCombiner
+    attrs:
+      source_feature: Features.TFIDF_FULL_TEXT
+      threshold:
+        - 0.1
+        - 0.2
+        - 0.3
+        - 0.4
+        - 0.5
+        - 0.6
+        - 0.7
+        - 0.8
+        - 0.9
+  - combiner_name: TFIDFCentroidIncrementalCombiner
+    enabled: true
+    class: CentroidIncrementalCombiner
+    attrs:
+      source_feature: Features.TFIDF_FULL_TEXT
+      threshold:
+        - 0.1
+        - 0.2
+        - 0.3
+        - 0.4
+        - 0.5
+        - 0.6
+        - 0.7
+        - 0.8
+        - 0.9
+
+experiments:
+  - experimentId: tfidfvsincrementalseta
+    numRuns: 30
+    numParallel: 5
+    args:
+      - --mongo-collection=random_validation_data_1K
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=A
+      - --true-profiles-distribution-summarizer-class=A
+      - --mongo-output-collection=tfidf_vs_incremental_set_a
+      - --combiners-config-yaml=/etc/combiners_config/combiners_config
+
+  - experimentId: tfidfvsincrementalsetb
+    numRuns: 30
+    numParallel: 5
+    args:
+      - --mongo-collection=random_validation_data_1K
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=B
+      - --true-profiles-distribution-summarizer-class=B
+      - --mongo-output-collection=tfidf_vs_incremental_set_b
+      - --combiners-config-yaml=/etc/combiners_config/combiners_config

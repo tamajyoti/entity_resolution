@@ -1,0 +1,32 @@
+resources:
+  limits:
+    cpu: 4000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+common:
+  disableDownScaler: true
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: TFIDFCosineSimilarityCombiner
+    enabled: true
+    class: TFIDFCosineSimilarityCombiner
+    attrs:
+      source_feature: Features.TFIDF_FULL_TEXT
+      th:
+        - 0.25
+
+experiments:
+
+  - experimentId: setbgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_test_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=B
+      - --true-profiles-distribution-summarizer-class=B
+      - --mongo-output-collection=tfidf-cosine-similairty-results-best-model-set-b

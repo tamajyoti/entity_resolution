@@ -1,0 +1,660 @@
+visitors:
+  - ArticleKeywordVisitor:
+      class: ArticleKeywordVisitor
+      attrs:
+        keywords_filename: am_combiner/data/keywords.csv
+        feature_name: Features.TERM_KEYWORD
+  - AdverseMediaVisitor:
+      class: MetaKeyVisitor
+      attrs:
+        feature_key : listing_subtype
+        feature_name: Features.AM_CATEGORY
+  - DOBVisitor:
+      class: MetaKeyVisitor
+      attrs:
+        feature_key : DOB
+        feature_name: Features.DOB
+  - ProfessionNLTKKeywordVisitor:
+      class: ArticleKeywordVisitor
+      attrs:
+        keywords_filename: am_combiner/data/professions_nltk.csv
+        feature_name: Features.PROFESSION_NLTK_KEYWORD
+  - ProfessionKeywordKeywordVisitor:
+      class: ArticleKeywordVisitor
+      attrs:
+        keywords_filename: am_combiner/data/occupation_list_global.csv
+        feature_name: Features.PROFESSION_KEYWORD_KEYWORD
+  - ProfessionDependencyVisitor:
+      class: ProfessionVisitor
+      attrs:
+        occupation_csv_path: am_combiner/data/occupation_list_global.csv
+        field_name: Features.PROFESSION_DEPENDENCY_PARSING
+  - ArticleTermVisitor:
+      class: ArticleTermVisitor
+      attrs:
+  - UrlDomainVisitor:
+      class: UrlDomainVisitor
+      attrs:
+  - TimeStandardisationVisitor:
+      class: TimeStandardisationVisitor
+      attrs:
+  - DateStandardisationVisitor:
+      class: DateStandardisationVisitor
+      attrs:
+  - EntityNameRemoverFullTextVisitor:
+      class: EntityNameRemoverVisitor
+      attrs:
+        source_feature: Features.ARTICLE_TEXT
+  - EntityNameRemoverSelectedTextVisitor:
+      class: EntityNameRemoverVisitor
+      attrs:
+        source_feature: Features.ARTICLE_TEXT_SELECTED
+  - SpacyArticleVisitor:
+      class: SpacyArticleVisitor
+      attrs:
+        lower_case_features: True
+  - SpacyWithCorefArticleVisitor:
+      class: SpacyArticleVisitor
+      attrs:
+        do_coref_resolution: True
+  - TextSelectorArticleVisitor:
+      class: ArticleSelectedTextVisitor
+      attrs:
+        target_feature: Features.ARTICLE_TEXT_SELECTED
+        source_feature: Features.ARTICLE_SENTENCES
+        preceding_sentences: 1
+        post_sentences: 1
+  - TextSelectorWithCorefArticleVisitor:
+      class: ArticleSelectedTextVisitor
+      attrs:
+        target_feature: Features.ARTICLE_TEXT_SELECTED
+        source_feature: Features.COREFERENCE_RESOLVED_SENTENCES
+        preceding_sentences: 1
+        post_sentences: 1
+  - HTMLTextCleaner:
+      class: TextCleaningVisitor
+      attrs:
+  - EntityNameFromPersonCleaner:
+      class: FieldCleaningVisitor
+      attrs:
+        feature_name: Features.PERSON
+        target_feature: Features.PERSON_CLEAN
+  - EntityNameFromORGCleaner:
+      class: FieldCleaningVisitor
+      attrs:
+        feature_name: Features.ORG
+        target_feature: Features.ORG_CLEAN
+  - EntityNameFromGPECleaner:
+      class: FieldCleaningVisitor
+      attrs:
+        feature_name: Features.GPE
+        target_feature: Features.GPE_CLEAN
+  - TFIDFFullTextVisitor:
+      class: TFIDFFullTextVisitor
+      attrs:
+        vectoriser_uri: am_combiner/data/models/tfidf_1_3.pkl
+        target_feature: Features.TFIDF_FULL_TEXT
+  - TFIDFFullTextVisitorS3:
+      class: TFIDFFullTextVisitorS3
+      attrs:
+        vectoriser_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/tfidf_1_3.pkl
+        target_feature: Features.TFIDF_FULL_TEXT
+        cache: am_combiner/data/models/
+  - TFIDFFullTextVisitorS3_8000:
+      class: TFIDFFullTextVisitorS3
+      attrs:
+        vectoriser_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/tfidf_8000_.pkl
+        target_feature: Features.TFIDF_FULL_TEXT_8000
+        cache: am_combiner/data/models/
+  - TFIDFFullTextVisitorS3_12000:
+      class: TFIDFFullTextVisitorS3
+      attrs:
+        vectoriser_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/tfidf_12000_.pkl
+        target_feature: Features.TFIDF_FULL_TEXT_12000
+        cache: am_combiner/data/models/
+  - TFIDFFullTextVisitorS3_6000:
+      class: TFIDFFullTextVisitorS3
+      attrs:
+        vectoriser_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/tfidf_6000_.pkl
+        target_feature: Features.TFIDF_FULL_TEXT
+        cache: am_combiner/data/models/
+  - TFIDFCoreferenceResolvedTextVisitor:
+      class: TFIDFFullTextVisitor
+      attrs:
+        vectoriser_uri: am_combiner/data/models/tfidf_coreference_resolved.pkl
+        target_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        source_feature: Features.COREFERENCE_RESOLVED_TEXT
+  - TFIDFSelectedTextVisitor:
+      class: TFIDFFullTextVisitor
+      attrs:
+        vectoriser_uri: am_combiner/data/models/tfidf_1_3.pkl
+        target_feature: Features.TFIDF_SELECTED_TEXT
+        source_feature: Features.ARTICLE_TEXT_SELECTED
+  - BertVisitor:
+      class: BertVisitor
+      attrs:
+        target_feature: Features.BERT_FEATURES
+        source_feature: Features.ARTICLE_SENTENCES
+  - ArticleSelectedTextVisitor:
+      class: ArticleSelectedTextVisitor
+      attrs:
+        target_feature: Features.ARTICLE_TEXT_SELECTED
+  - ArticleGeoVisitor:
+      class: ArticleGeoVisitor
+      attrs:
+  - GraphDataVisitor:
+      class: GraphDataVisitor
+      attrs:
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+  - TopicVisitor:
+      class: TopicVisitor
+      attrs:
+        lda_model_path: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/lda_model_20
+        dictionary_path: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/lda_model_20.id2word
+        state_path: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/lda_model_20.state
+        beta_path: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/lda_model_20.expElogbeta.npy
+        bigram_path:  s3://ca-amt-mi-playground-1-entity-resolution-ml-models/bigram_phraser.pickle
+        feature_topic: Features.TOPIC_IDS
+        feature_distribution: Features.TOPIC_DISTRIBUTION
+        cache: am_combiner/data/topic_models_s3/
+  - TopicTfidfConcatVisitor:
+      class: TopicTfidfConcatVisitor
+      attrs:
+        target_feature: Features.TFIDF_TOPIC_CONCAT
+        feature_topic: Features.TOPIC_DISTRIBUTION
+        feature_tfidf: Features.TFIDF_FULL_TEXT_12000
+
+combiners:
+  - GCNHeteroCombiner:
+      class: GCNHeteroCombiner
+      attrs:
+        model_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/hetero_custom_loss_th_0.91.torch
+        config_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/hetero_custom_loss_th_0.91.json
+        cache: am_combiner/data/models/
+        node_features: Features.TFIDF_FULL_TEXT_12000
+        use_features:
+          - Features.ORG_CLEAN
+          - Features.PERSON_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+          - Features.DOMAIN
+          - Features.AM_CATEGORY
+  - GCNHeteroCombiner_512:
+      class: GCNHeteroCombiner
+      attrs:
+        model_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCNHeteroCombiner_512_th_0.92.torch
+        config_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCNHeteroCombiner_512_th_0.92.json
+        cache: am_combiner/data/models/
+        node_features: Features.TFIDF_FULL_TEXT_12000
+        use_features:
+          - Features.ORG_CLEAN
+          - Features.PERSON_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+          - Features.DOMAIN
+          - Features.AM_CATEGORY
+  - GCNCombiner:
+      class: GCNCombiner
+      attrs:
+        model_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCN_th_0.91.torch
+        config_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCN_th_0.91.json
+        cache: am_combiner/data/models/
+        node_features: Features.TFIDF_FULL_TEXT_12000
+        use_features:
+          - Features.ORG_CLEAN
+          - Features.PERSON_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+          - Features.DOMAIN
+          - Features.AM_CATEGORY
+  - GCNCombiner_oldTFIDF:
+      class: GCNCombiner
+      attrs:
+        model_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCN_old_TFIDF_th_0.91.torch
+        config_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/GCN_old_TFIDF_th_0.91.json
+        cache: am_combiner/data/models/
+        node_features: Features.TFIDF_FULL_TEXT
+        use_features:
+          - Features.ORG_CLEAN
+          - Features.PERSON_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+          - Features.DOMAIN
+          - Features.AM_CATEGORY
+  - ConnectedComponentsCombiner:
+      class: ConnectedComponentsCombiner
+      attrs:
+        th: 1
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE
+  - CurrentProductionCombiner:
+      class: CurrentProductionCombiner
+      attrs:
+  - TFIDFKMeansCombiner:
+      class: TFIDFKMeansCombiner
+      attrs:
+        source_feature: Features.BERT_FEATURES
+  - TFIDFCosineSimilarityCombiner0.0:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.0
+  - TFIDFCosineSimilarityCombiner0.1:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.1
+  - TFIDFCosineSimilarityCombiner0.2:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.2
+  - TFIDFCosineSimilarityCombiner0.3:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.3
+  - TFIDFCosineSimilarityCombiner0.4:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.4
+  - TFIDFCosineSimilarityCombiner0.5:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.5
+  - TFIDFCosineSimilarityCombiner0.6:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.6
+  - TFIDFCosineSimilarityCombiner0.7:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.7
+  - TFIDFCosineSimilarityCombiner0.8:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.8
+  - TFIDFCorefenceCosineSimilarityCombiner0.1:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.1
+  - TFIDFCorefenceCosineSimilarityCombiner0.2:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.2
+  - TFIDFCorefenceCosineSimilarityCombiner0.3:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.3
+  - TFIDFCorefenceCosineSimilarityCombiner0.4:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.4
+  - TFIDFCorefenceCosineSimilarityCombiner0.5:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.5
+  - TFIDFCorefenceCosineSimilarityCombiner0.6:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.6
+  - TFIDFCorefenceCosineSimilarityCombiner0.7:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_COREFERENCE_RESOLVED_TEXT
+        th: 0.7
+  - TFIDFAndFeaturesCosineSimilarityCombiner0.3:
+      class: TFIDFAndFeaturesCosineSimilarityCombiner
+      attrs:
+        th: 0.3
+        max_energy: 30
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - AnnotationsCombiner:
+      class: AnnotationsCombiner
+      attrs:
+        th: 0.3
+        max_energy: 30
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - TFIDFAndFeaturesCosineSimilarityCombiner0.65:
+      class: TFIDFAndFeaturesCosineSimilarityCombiner
+      attrs:
+        th: 0.65
+        max_energy: 75
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - TFIDFAndFeaturesCosineSimilarityCombiner0.7:
+      class: TFIDFAndFeaturesCosineSimilarityCombiner
+      attrs:
+        th: 0.7
+        max_energy: 75
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - TFIDFAndFeaturesCosineSimilarityCombiner0.75:
+      class: TFIDFAndFeaturesCosineSimilarityCombiner
+      attrs:
+        th: 0.75
+        max_energy: 75
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - TFIDFAndFeaturesCosineSimilarityCombiner0.8:
+      class: TFIDFAndFeaturesCosineSimilarityCombiner
+      attrs:
+        th: 0.8
+        max_energy: 75
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - TFIDFSelectedCosineSimilarityCombiner0.1:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_SELECTED_TEXT
+        th: 0.1
+  - TFIDFSelectedCosineSimilarityCombiner0.2:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_SELECTED_TEXT
+        th: 0.2
+  - TFIDFSelectedCosineSimilarityCombiner0.3:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_SELECTED_TEXT
+        th: 0.3
+  - TFIDFSelectedCosineSimilarityCombiner0.4:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_SELECTED_TEXT
+        th: 0.4
+  - TFIDFSelectedFeaturesCosineSimilarityCombiner0.7:
+      class: TFIDFAndFeaturesCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_SELECTED_TEXT
+        th: 0.7
+        max_energy: 0.5
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+  - TFIDFAndGraphCosineSimilarityCombiner0.3:
+      class: TFIDFAndGraphCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.4
+        max_energy: 0.15
+        min_energy: 0
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+          - Features.LOC
+  - TFIDFAndGraphCosineSimilarityCombiner0.4:
+      class: TFIDFAndGraphCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.4
+        max_energy: 0.15
+        min_energy: 0
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+  - TFIDFFeatrGraphCosineSimilarityCombiner0.4:
+      class: TFIDFFeatrGraphCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.TFIDF_FULL_TEXT
+        th: 0.4
+        max_energy: 0.15
+        min_energy: 0
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+  - BertFeatrGraphCosineSimilarityCombiner0.4:
+      class: TFIDFFeatrGraphCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.BERT_FEATURES
+        th: 0.7
+        ftr_max_energy: 45
+        max_energy: 0.15
+        min_energy: 0
+        use_features:
+          - Features.PERSON_CLEAN
+          - Features.ORG_CLEAN
+          - Features.GPE_CLEAN
+  - BertCosineSimilarityCombiner0.7:
+      class: TFIDFCosineSimilarityCombiner
+      attrs:
+        source_feature: Features.BERT_FEATURES
+        th: 0.8
+  - PairwiseTFIDFIncrementalCombiner0.1:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.1
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.2:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.2
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.3:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.3
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.4:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.4
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.5:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.5
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.6:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.6
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.7:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.7
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.8:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.8
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseTFIDFIncrementalCombiner0.9:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.9
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.1:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.1
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.2:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.2
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.3:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.3
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.4:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.4
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.5:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.5
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.6:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.6
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.7:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.7
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.8:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.8
+        source_feature: Features.TFIDF_FULL_TEXT
+  - CentroidTFIDFIncrementalCombiner0.9:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.9
+        source_feature: Features.TFIDF_FULL_TEXT
+  - PairwiseBERTIncrementalCombiner0.9:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.9
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.91:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.91
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.92:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.92
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.93:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.93
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.94:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.94
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.95:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.95
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.96:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.96
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.97:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.97
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.98:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.98
+        source_feature: Features.BERT_FEATURES
+  - PairwiseBERTIncrementalCombiner0.99:
+      class: PairwiseIncrementalCombiner
+      attrs:
+        threshold: 0.99
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.9:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.9
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.91:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.91
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.92:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.92
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.93:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.93
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.94:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.94
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.95:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.95
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.96:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.96
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.97:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.97
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.98:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.98
+        source_feature: Features.BERT_FEATURES
+  - CentroidBERTIncrementalCombiner0.99:
+      class: CentroidIncrementalCombiner
+      attrs:
+        threshold: 0.99
+        source_feature: Features.BERT_FEATURES
+  - LibTFIDFCosineSimilarityClusterer0.2:
+      class: LibTFIDFCosineSimilarityClusterer
+      attrs:
+        threshold: 0.2
+        vectoriser_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/tfidf_1_3.pkl
+        vectoriser_target_path: am_combiner/data/models/
+TfIdfVectoriserPickleFilenamePattern: tf_idf_vocab_{vocab_size}.pkl
+TfIdfVectoriserVariableFreqPickleFilenamePattern: tf_idf_vocab_{min_df}_{max_df}_8000.pkl

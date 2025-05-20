@@ -1,0 +1,76 @@
+{{- if .Values.server.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "am_combiner_integration_tests.fullname" $ }}
+  labels:
+{{ include "am_combiner_integration_tests.labels" $ | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "am_combiner_integration_tests.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "am_combiner_integration_tests.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "am_combiner_integration_tests.serviceAccountName" . }}
+
+      # This serves the results
+      containers:
+        - name: {{ .Chart.Name }}
+          image: python:3.9
+          command:
+          - python
+          - -m
+          - http.server
+          - --directory
+          - /data
+          - {{ .Values.server.port | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: {{ .Values.server.portName }}
+              containerPort: {{ .Values.server.port }}
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: {{ int .Values.containerProbe.initialDelay }}
+            periodSeconds: {{ int .Values.containerProbe.period }}
+            httpGet:
+              path: /
+              port: {{ .Values.server.portName }}
+          readinessProbe:
+            initialDelaySeconds: {{ int .Values.containerProbe.initialDelay }}
+            periodSeconds: {{ int .Values.containerProbe.period }}
+            httpGet:
+              path: /
+              port: {{ .Values.server.portName }}
+          resources:
+            {{- toYaml .Values.server.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ include "am_combiner_integration_tests.pvc" $ }}
+              mountPath: /data
+
+      # This runs the test
+      initContainers:
+        - name: {{ $.Chart.Name }}-init
+          image: "{{ $.Values.image.repository }}:{{ $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+          command:
+            - bash
+            - -c
+          args:
+            - 'pytest -vvv -m integtest --junit-xml=/data/tests.xml | tee /data/log.txt; echo $? > /data/result_code.txt'
+          volumeMounts:
+            - name: {{ include "am_combiner_integration_tests.pvc" $ }}
+              mountPath: /data
+
+      volumes:
+        - name: {{ include "am_combiner_integration_tests.pvc" $ }}
+          persistentVolumeClaim:
+            claimName: {{ include "am_combiner_integration_tests.pvc" $ }}
+{{- end }}

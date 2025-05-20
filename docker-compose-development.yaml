@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  am_combiner:
+    image: am_combiner:latest
+    container_name: am_combiner_latest
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: jupyter notebook --ip=0.0.0.0 --port=8080 --allow-root
+    volumes:
+      - ${PWD}/:/am_combiner
+      - ${EXCHANGE_FOLDER}/:/exchange

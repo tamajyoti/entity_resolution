@@ -1,0 +1,59 @@
+{{- range .Values.experiments }}
+{{- $experiment := . }}
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "am_combiner.fullname" $ }}-{{ $experiment.experimentId }}
+  labels:
+{{ include "am_combiner.labels" $ | indent 4 }}
+spec:
+  completions: {{ $experiment.numRuns }}
+  parallelism: {{ $experiment.numParallel }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "am_combiner.name" $ }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        experimentId: {{ $experiment.experimentId }}
+
+      {{- if $.Values.common.disableDownScaler }}
+      annotations:
+        downscaler/exclude: "true"
+      {{- end }}
+
+    spec:
+      serviceAccountName: {{ template "am_combiner.serviceAccountName" $ }}
+      restartPolicy: {{ $.Values.common.restartPolicy }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "am_combiner.fullname" $ }}-config
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.appVersion | default $.Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+          args:
+            - --experiment-id={{ $experiment.experimentId }}
+            {{- toYaml $.Values.commonArguments | nindent 12 }}
+            {{- toYaml $experiment.args | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/combiners_config
+
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end }}

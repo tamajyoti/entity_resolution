@@ -1,0 +1,69 @@
+resources:
+  limits:
+    cpu: 4000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+common:
+  disableDownScaler: true
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: TFIDFCosineSimilarityCombiner
+    enabled: true
+    class: TFIDFCosineSimilarityCombiner
+    attrs:
+      source_feature: Features.TFIDF_FULL_TEXT
+      th:
+        - 0.1
+        - 0.15
+        - 0.16
+        - 0.17
+        - 0.18
+        - 0.19
+        - 0.2
+        - 0.21
+        - 0.22
+        - 0.23
+        - 0.24
+        - 0.25
+        - 0.3
+        - 0.4
+        - 0.5
+        - 0.6
+        - 0.7
+        - 0.8
+        - 0.9
+
+experiments:
+  - experimentId: setagridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=A
+      - --true-profiles-distribution-summarizer-class=A
+      - --mongo-output-collection=tfidf-cosine-similairty-set-a-results
+
+  - experimentId: setbgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=B
+      - --true-profiles-distribution-summarizer-class=B
+      - --mongo-output-collection=tfidf-cosine-similairty-set-b-results
+
+  - experimentId: setcgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=C
+      - --true-profiles-distribution-summarizer-class=C
+      - --mongo-output-collection=tfidf-cosine-similairty-set-c-results

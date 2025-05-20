@@ -1,0 +1,38 @@
+resources:
+  limits:
+    cpu: 8000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+common:
+  disableDownScaler: true
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: TFIDFFeatrGraphCosineSimilarityCombiner
+    enabled: true
+    class: TFIDFFeatrGraphCosineSimilarityCombiner
+    attrs:
+      use_features:
+        - Features.PERSON_CLEAN
+        - Features.ORG_CLEAN
+        - Features.GPE_CLEAN
+      th:
+        - 0.4
+      ftr_max_energy:
+        - 45
+      max_energy:
+        - 0.15
+
+experiments:
+  - experimentId: specsetagridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_validation_data_1K
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=B
+      - --true-profiles-distribution-summarizer-class=B
+      - --mongo-output-collection=tfidf-and-spectral-clustering-results-best-model

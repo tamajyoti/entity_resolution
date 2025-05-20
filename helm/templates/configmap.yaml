@@ -1,0 +1,125 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "am_combiner.fullname" $ }}-config
+data:
+  combiners_config: |-
+    combiners:
+      {{- range .Values.combiners }}
+      {{- $this_combiner := . }}
+      {{- if $this_combiner.enabled}}
+      {{- if eq $this_combiner.combiner_name "TFIDFAndFeaturesCosineSimilarityCombiner" }}
+      {{- range $this_combiner.attrs.th }}
+      {{- $this_th := . }}
+      {{- range $this_combiner.attrs.max_energy }}
+      {{- $this_energy := . }}
+      - {{ $this_combiner.combiner_name }}-{{$this_th}}-{{$this_energy}}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            use_features:
+            {{- range $this_combiner.attrs.use_features }}
+              - {{.}}
+            {{- end }}
+            th: {{$this_th}}
+            max_energy: {{$this_energy}}
+            mongo_uri: {{$this_combiner.attrs.mongo_uri}}
+            mongo_collection: {{$this_combiner.attrs.mongo_collection}}
+      {{- end }}
+      {{- end }}
+      {{- else if eq $this_combiner.combiner_name "GCNCombiner" }}
+      - {{ $this_combiner.combiner_name }}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            use_features:
+            {{- range $this_combiner.attrs.use_features }}
+              - {{.}}
+            {{- end }}
+            model_uri: {{ $this_combiner.attrs.model_uri }}
+            config_uri: {{ $this_combiner.attrs.config_uri }}
+            cache: {{ $this_combiner.attrs.cache }}
+            node_features: {{ $this_combiner.attrs.node_features }}
+      {{- else if eq $this_combiner.combiner_name "HeteroGCNCombiner" }}
+      - {{ $this_combiner.combiner_name }}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            use_features:
+            {{- range $this_combiner.attrs.use_features }}
+              - {{.}}
+            {{- end }}
+            model_uri: {{ $this_combiner.attrs.model_uri }}
+            config_uri: {{ $this_combiner.attrs.config_uri }}
+            cache: {{ $this_combiner.attrs.cache }}
+            node_features: {{ $this_combiner.attrs.node_features }}
+      {{- else if eq $this_combiner.combiner_name "HeteroGCNCombinerStoreSim" }}
+      - {{ $this_combiner.combiner_name }}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            use_features:
+            {{- range $this_combiner.attrs.use_features }}
+              - {{.}}
+            {{- end }}
+            model_uri: {{ $this_combiner.attrs.model_uri }}
+            config_uri: {{ $this_combiner.attrs.config_uri }}
+            cache: {{ $this_combiner.attrs.cache }}
+            node_features: {{ $this_combiner.attrs.node_features }}
+            mongo_uri: {{$this_combiner.attrs.mongo_uri}}
+            mongo_collection: {{$this_combiner.attrs.mongo_collection}}
+      {{- else if eq $this_combiner.combiner_name "HeteroGCNCombinerOld" }}
+      - {{ $this_combiner.combiner_name }}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            use_features:
+            {{- range $this_combiner.attrs.use_features }}
+              - {{.}}
+            {{- end }}
+            model_uri: {{ $this_combiner.attrs.model_uri }}
+            config_uri: {{ $this_combiner.attrs.config_uri }}
+            cache: {{ $this_combiner.attrs.cache }}
+            node_features: {{ $this_combiner.attrs.node_features }}
+      {{- else if eq $this_combiner.combiner_name "TFIDFFeatrGraphCosineSimilarityCombiner" }}
+      {{- range $this_combiner.attrs.th }}
+      {{- $this_th := . }}
+      {{- range $this_combiner.attrs.ftr_max_energy }}
+      {{- $this_ftr_energy := . }}
+      {{- range $this_combiner.attrs.max_energy }}
+      {{- $this_max_energy := . }}
+      - {{ $this_combiner.combiner_name }}-{{$this_th}}-{{$this_ftr_energy}}-{{$this_max_energy}}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            use_features:
+            {{- range $this_combiner.attrs.use_features }}
+              - {{.}}
+            {{- end }}
+            th: {{$this_th}}
+            ftr_max_energy: {{$this_ftr_energy}}
+            max_energy: {{$this_max_energy}}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- else if eq $this_combiner.combiner_name "TFIDFCosineSimilarityCombiner" }}
+      {{- range .attrs.th }}
+      - {{ $this_combiner.combiner_name }}{{.}}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            source_feature: {{$this_combiner.attrs.source_feature}}
+            th: {{.}}
+      {{- end }}
+      {{- else if eq $this_combiner.combiner_name "TFIDFPairwiseIncrementalCombiner" }}
+      {{- range .attrs.threshold }}
+      - {{ $this_combiner.combiner_name }}{{.}}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            source_feature: {{$this_combiner.attrs.source_feature}}
+            threshold: {{.}}
+      {{- end }}
+      {{- else if eq $this_combiner.combiner_name "TFIDFCentroidIncrementalCombiner" }}
+      {{- range .attrs.threshold }}
+      - {{ $this_combiner.combiner_name }}{{.}}:
+          class: {{ $this_combiner.class }}
+          attrs:
+            source_feature: {{$this_combiner.attrs.source_feature}}
+            threshold: {{.}}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- end }}

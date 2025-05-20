@@ -1,0 +1,14 @@
+{{ if .Values.server.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "am_combiner_integration_tests.pvc" $ }}
+  labels:
+{{ include "am_combiner_integration_tests.labels" $ | indent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}

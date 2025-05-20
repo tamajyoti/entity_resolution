@@ -1,0 +1,53 @@
+image:
+  repository: 871716277715.dkr.ecr.eu-west-1.amazonaws.com/machine-learning/data-science-and-statistical-learning/am_combiner
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: entity-resolution-aws-access
+
+resources:
+  # Initial guess - may need to be higher
+  limits:
+    cpu: OVERRIDE
+    memory: OVERRIDE
+  requests:
+    cpu: OVERRIDE
+    memory: OVERRIDE
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+common:
+  disableDownScaler: true
+  # Never - if job cannot be restarted, OnFailure if it can
+  restartPolicy: OVERRIDE
+
+commonArguments:
+  - --name-resamplings=0
+  - --thread-count=8
+  - --name-holdout-ratio=0.7
+  - --combiners=all
+  - --random-input-size=50
+  - --output-path=/exchange/experiment_output
+  - --combiners-config-yaml=/etc/combiners_config/combiners_config
+  - --results-storage=mongo
+  - --visitors=HTMLTextCleaner
+  - --visitors=SpacyArticleVisitor
+  - --visitors=EntityNameFromPersonCleaner
+  - --visitors=EntityNameFromGPECleaner
+  - --visitors=EntityNameFromORGCleaner
+  - --visitors=EntityNameRemoverFullTextVisitor
+  - --visitors=AdverseMediaVisitor
+  - --visitors=TFIDFFullTextVisitorS3_12000
+  - --store-input-frame=False
+  - --store-per-profile-output=False
+  - --meta-data-keys=listing_subtype
+experiments: OVERRIDE

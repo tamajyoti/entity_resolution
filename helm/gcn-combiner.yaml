@@ -1,0 +1,59 @@
+resources:
+  # Initial guess from the provision of TORCH and spacy in the pod.  May need to be higher
+  limits:
+    cpu: 4000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+common:
+  disableDownScaler: true
+  # Never - if job cannot be restarted, OnFailure if it can
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: GCNCombiner
+    enabled: true
+    class: GCNCombiner
+    attrs:
+      model_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/sage_homo_graph.torch
+      config_uri: s3://ca-amt-mi-playground-1-entity-resolution-ml-models/sage_homo_graph.json
+      cache: am_combiner/data/models/
+      node_features: Features.TFIDF_FULL_TEXT
+      use_features:
+        - Features.ORG_CLEAN
+        - Features.PERSON_CLEAN
+        - Features.GPE_CLEAN
+        - Features.LOC
+
+experiments:
+  - experimentId: setagridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=A
+      - --true-profiles-distribution-summarizer-class=A
+      - --mongo-output-collection=gcn-combiner-results-set-a
+
+  - experimentId: setbgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=B
+      - --true-profiles-distribution-summarizer-class=B
+      - --mongo-output-collection=gcn-combiner-results-set-b
+
+  - experimentId: setcgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=C
+      - --true-profiles-distribution-summarizer-class=C
+      - --mongo-output-collection=gcn-combiner-results-set-c

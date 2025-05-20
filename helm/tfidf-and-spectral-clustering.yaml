@@ -1,0 +1,72 @@
+resources:
+  limits:
+    cpu: 8000m
+    memory: 16Gi
+  requests:
+    cpu: 4000m
+    memory: 12Gi
+
+common:
+  disableDownScaler: true
+  restartPolicy: Never
+
+combiners:
+  - combiner_name: TFIDFFeatrGraphCosineSimilarityCombiner
+    enabled: true
+    class: TFIDFFeatrGraphCosineSimilarityCombiner
+    attrs:
+      use_features:
+        - Features.PERSON_CLEAN
+        - Features.ORG_CLEAN
+        - Features.GPE_CLEAN
+      th:
+        - 0.2
+        - 0.3
+        - 0.4
+        - 0.5
+        - 0.6
+        - 0.7
+        - 0.8
+      ftr_max_energy:
+        - 15
+        - 25
+        - 35
+        - 45
+        - 55
+        - 65
+        - 75
+        - 80
+      max_energy:
+        - 0.10
+        - 0.15
+        - 0.20
+        - 0.25
+
+experiments:
+  - experimentId: setagridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=A
+      - --true-profiles-distribution-summarizer-class=A
+      - --mongo-output-collection=tfidf-and-spectral-clustering-set-a-results
+  - experimentId: setbgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=B
+      - --true-profiles-distribution-summarizer-class=B
+      - --mongo-output-collection=tfidf-and-spectral-clustering-set-b-results
+  - experimentId: setcgridsearch
+    numRuns: 30
+    numParallel: 10
+    args:
+      - --mongo-collection=random_uncommon_v2_set
+      - --input-data-source=random
+      - --name-set-distribution-summarizer-class=C
+      - --true-profiles-distribution-summarizer-class=C
+      - --mongo-output-collection=tfidf-and-spectral-clustering-set-c-results

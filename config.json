@@ -1,0 +1,39 @@
+{
+    "mongo":{
+        "host":{
+            "playground": "mongodb://mongodb-mf-person-0-0",
+            "staging": "mongodb://mongodb-mf-person-0-0",
+            "localhost": "mongodb://127.0.0.1:27017",
+            "prod": "mongodb://mongodb-mf-person-0-0",
+            "reprocessed": "mongodb://mongodb-fatf-person-0-0"
+        },
+        "mention_factory":{
+            "db_name": "mentionfactory",
+            "mention": "mentions",
+            "entity": "metadata",
+            "mapping": "mapping"
+        },
+        "am_combiner":{
+            "db_name": "am_combiner",
+            "name_list": "name_list",
+            "name_tokens": "name_tokens",
+            "feature_test": "feature_test_set",
+            "validation_set": "dqs_validation_set"
+        },
+        "mapping":{
+            "db_name": "mapping",
+            "players": "playersAlias"
+        }
+    },
+     "elastic_search":{
+         "host": {
+             "prod": "http://nutch-es5-client",
+             "reprocessed": "fatf-reprocessing-es-client.k8s.mi-production-1"
+         },
+         "time_out": 200,
+         "indexes": {
+             "articles": "nutch-*",
+             "mentions": "mention-*"
+       }
+     }
+}

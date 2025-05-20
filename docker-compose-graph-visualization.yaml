@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  am_combiner:
+    image: am_combiner:latest
+    container_name: am_combiner_latest
+    ports:
+      - "5000:5000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python combiner_visualization_app/graph_viz_server/app.py
+    volumes:
+      - .:/am_combiner
+      - ${EXCHANGE_FOLDER}:/exchange
